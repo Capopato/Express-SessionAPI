@@ -1,1 +1,1 @@
-npm i express bcrypt cors jsonwebtoken mongoose nodemon uuidv4 zod dotenv express-session @types/express-session npm i --save-dev @types/bcrypt
+npm i express bcrypt cors jsonwebtoken mongoose nodemon uuidv4 zod dotenv express-session @types/express-session npm i --save-dev @types/bcrypt npm i --save-dev @types/jsonwebtoken

@@ -6,6 +6,7 @@ export interface userModel extends Document {
   username: string;
   password: string;
   passwordCheck: string;
+  comparePasswords(passwordCheck: string): boolean;
 }
 
 const userSchema: Schema = new Schema(
@@ -30,5 +31,11 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
+
+userSchema.methods.comparePasswords = async function (passwordCheck: string) {
+  const user = this as userModel;
+
+  return bcrypt.compare(passwordCheck, user.password).catch((error) => false);
+};
 
 export default mongoose.model<userModel>("User", userSchema);

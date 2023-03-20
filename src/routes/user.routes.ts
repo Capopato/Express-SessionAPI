@@ -1,13 +1,14 @@
 import express from "express";
 import { deleteAllusers, deleteUser, readAllusers, readUser, updateUser } from "../controllers/user.controller";
-import { validateUserUpdate } from "../utils/validate.util";
+import { validateUserUpdate } from "../validation/user.validate";
+import { deserializeUser } from "../middleware/deserializeUser.middleware";
 
 const userRoutes = express.Router();
 
-userRoutes.put("/update/:userId", validateUserUpdate, updateUser);
-userRoutes.get("/read/:userId", readUser);
-userRoutes.get("/read-all", readAllusers);
-userRoutes.delete("/delete/:userId", deleteUser);
-userRoutes.delete("/delete-all", deleteAllusers);
+userRoutes.put("/update/:userId", deserializeUser, validateUserUpdate, updateUser);
+userRoutes.get("/read/:userId", deserializeUser, readUser);
+userRoutes.get("/read-all", deserializeUser, readAllusers);
+userRoutes.delete("/delete/:userId", deserializeUser, deleteUser);
+userRoutes.delete("/delete-all", deserializeUser, deleteAllusers);
 
 export default userRoutes;
