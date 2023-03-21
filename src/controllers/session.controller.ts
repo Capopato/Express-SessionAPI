@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import User, { userModel } from "../models/user.model";
 import mongoose from "mongoose";
-import { signJWT } from "../utils/jwt.util";
+import { signJWTAccessToken, signJWTRefreshToken } from "../utils/jwt.util";
 import config from "../config/config";
 
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
@@ -38,8 +38,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     return res.status(403).send("Passwords do not match.");
   }
 
-  const accessToken = signJWT(user);
-  const refreshToken = signJWT(user);
+  const accessToken = signJWTAccessToken(user);
+  const refreshToken = signJWTRefreshToken(user);
 
   res
     .cookie("accessToken", accessToken, {
@@ -60,16 +60,23 @@ export const logout = (req: Request, res: Response, next: NextFunction) => {
   const headers = req.headers.cookie;
 
   if (!headers) {
-    return res.status(400).send("Headers not found.");
-  } else {
+    return res.status(400).send("Headers not found and no session in place.");
   }
 
-  /**
-   * router.get('/logout', function (req, res) {
-  req.logOut();
-  res.status(200).clearCookie('connect.sid', {
-    path: '/'
-  });
-   */
-  next();
+  const cookies = headers.split("; ");
+  for (let i = 0; i < cookies.length; i++) {
+    // The word accessToken/refreshToken is split from the actual token by '='
+    const cookie = cookies[i].split("=");
+    if (cookie[0].includes("accessToken")) {
+      res.clearCookie("accessToken");
+    }
+    if (cookie[0].includes("refreshToken") || cookie[0].includes("newAccessToken")) {
+      res.clearCookie("refreshToken");
+      res.clearCookie("newAccessToken");
+    }
+    // if (cookie[0].includes("newAccessToken")) {
+    //   res.clearCookie("newAccessToken");
+    // }
+  }
+  res.status(200).send("You are logged out.");
 };

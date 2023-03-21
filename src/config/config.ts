@@ -9,9 +9,9 @@ const port = process.env.port || 3001;
 const publicKey = process.env.publicKey || "";
 const privateKey = process.env.privateKey || "";
 const accessTokenLT = "1m";
-const refreshTokenLT = "15m";
+const refreshTokenLT = "7d";
 const cookieAccessTokenLT = new Date(Date.now() + 1 * 60 * 1000);
-const cookieRefreshTokenLT = new Date(Date.now() + 150 * 60 * 1000);
+const cookieRefreshTokenLT = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
 export default {
   mongoDBUsername,

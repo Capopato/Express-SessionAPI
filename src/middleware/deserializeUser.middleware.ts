@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyJWT } from "../utils/jwt.util";
 import { reissueToken } from "../utils/reissueToken.util";
+import config from "../config/config";
 
 export const deserializeUser = async (req: Request, res: Response, next: NextFunction) => {
   let accessToken = "";
@@ -10,7 +11,7 @@ export const deserializeUser = async (req: Request, res: Response, next: NextFun
   const headers = req.headers.cookie;
 
   if (!headers) {
-    return res.status(400).send("Headers not found.");
+    return res.status(400).send("No session found. Please log in.");
   }
   // The tokens are split by '; '.
   const cookies = headers.split("; ");
@@ -38,12 +39,17 @@ export const deserializeUser = async (req: Request, res: Response, next: NextFun
   }
 
   if (!accessToken && refreshToken) {
-    const newToken = await reissueToken(refreshToken);
-    console.log(newToken);
-    next();
-    /**
-     * Issue a new refreshtoken */
-  }
+    const newAccessToken = await reissueToken(refreshToken);
+    if (!newAccessToken) {
+      return res.status(403).send("Session not allowed.");
+    }
 
-  // res.status(200).send("Ok");
+    res.cookie("newAccessToken", newAccessToken, {
+      httpOnly: true,
+      secure: false,
+      expires: config.cookieAccessTokenLT,
+    });
+
+    return next();
+  }
 };
