@@ -74,9 +74,6 @@ export const logout = (req: Request, res: Response, next: NextFunction) => {
       res.clearCookie("refreshToken");
       res.clearCookie("newAccessToken");
     }
-    // if (cookie[0].includes("newAccessToken")) {
-    //   res.clearCookie("newAccessToken");
-    // }
   }
   res.status(200).send("You are logged out.");
 };

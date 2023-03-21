@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/user.model";
+import { validateUserUpdate } from "../validation/user.validate";
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
   const update = req.body;
-  // validate Update
 
   try {
     const user = await User.findById(userId);
